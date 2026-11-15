@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mission: Little Astronaut - Lunar Outpost Interactive Preview</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes floatGentle {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1.5deg); }
+    }
+    @keyframes floatAstronaut {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      30% { transform: translateY(-12px) rotate(-2deg); }
+      70% { transform: translateY(-6px) rotate(2deg); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.65; filter: drop-shadow(0 0 8px currentColor); }
+      50% { opacity: 0.95; filter: drop-shadow(0 0 18px currentColor); }
+    }
+    @keyframes twinkleStar {
+      0%, 100% { opacity: 0.25; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+    @keyframes energyFlow {
+      0% { stroke-dashoffset: 40; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @keyframes modalEntrance {
+      0% { opacity: 0; transform: scale(0.92) translateY(16px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes flagWave {
+      0%, 100% { transform: skewY(0deg); }
+      50% { transform: skewY(-4deg); }
+    }
+
+    .animate-float-gentle { animation: floatGentle 4s ease-in-out infinite; }
+    .animate-float-astronaut { animation: floatAstronaut 5s ease-in-out infinite; }
+    .animate-pulse-glow { animation: pulseGlow 2.5s ease-in-out infinite; }
+    .animate-twinkle-1 { animation: twinkleStar 3s ease-in-out infinite; }
+    .animate-twinkle-2 { animation: twinkleStar 4.2s ease-in-out infinite 1s; }
+    .animate-twinkle-3 { animation: twinkleStar 2.6s ease-in-out infinite 0.5s; }
+    .animate-energy-line { stroke-dasharray: 6 6; animation: energyFlow 1.8s linear infinite; }
+    .animate-modal-pop { animation: modalEntrance 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-flag-wave { animation: flagWave 3s ease-in-out infinite; transform-origin: left center; }
+
+    .interactive-building {
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: bottom center;
+    }
+    .interactive-building:hover {
+      transform: translateY(-8px) scale(1.03);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 antialiased select-none font-sans">
+  <div class="max-w-6xl mx-auto space-y-4">
+    
+    <!-- Top HUD Header -->
+    <header class="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl backdrop-blur-md">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-2xl shadow-lg shadow-sky-500/20">
+          🚀
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg md:text-xl font-black text-white tracking-tight">Mission: Little Astronaut</h1>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-800">
+              Interactive Preview
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Click any outpost building or astronaut character to inspect!</p>
+        </div>
+      </div>
+
+      <!-- Controls & Progress -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs font-bold">
+          <span class="text-amber-400">🏆</span>
+          <span>Badges:</span>
+          <span id="badgeCounter" class="text-sky-300 font-black">1 / 8</span>
+        </div>
+
+        <button id="toggleSoundBtn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-colors flex items-center gap-1.5">
+          <span id="soundIcon">🔊</span>
+          <span id="soundLabel">Audio On</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Visual Lunar Canvas Viewport -->
+    <div class="relative w-full aspect-[16/10] min-h-[500px] max-h-[780px] rounded-3xl border border-slate-800 overflow-hidden shadow-2xl bg-slate-950">
+      
+      <!-- 1. Deep Space Cosmic Sky & Twinkling Stars -->
+      <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at 75% 20%, #1e1b4b 0%, #090d16 55%, #02040a 100%);">
+        <!-- Nebula Clouds -->
+        <div class="absolute top-0 right-1/4 w-96 h-96 rounded-full opacity-20 filter blur-3xl" style="background: radial-gradient(circle, #818cf8 0%, #c084fc 40%, transparent 70%);"></div>
+        <div class="absolute top-12 left-1/6 w-80 h-80 rounded-full opacity-15 filter blur-3xl" style="background: radial-gradient(circle, #38bdf8 0%, #3b82f6 40%, transparent 70%);"></div>
+
+        <!-- Twinkling Star SVG -->
+        <svg class="absolute inset-0 w-full h-full">
+          <g class="animate-twinkle-1">
+            <circle cx="8%" cy="12%" r="2" fill="#ffffff" />
+            <circle cx="15%" cy="24%" r="1.5" fill="#bae6fd" />
+            <circle cx="28%" cy="8%" r="2.5" fill="#fef08a" />
+            <circle cx="48%" cy="11%" r="2" fill="#fed7aa" />
+            <circle cx="88%" cy="22%" r="2.5" fill="#bae6fd" />
+          </g>
+          <g class="animate-twinkle-2">
+            <circle cx="5%" cy="35%" r="1.5" fill="#ffffff" />
+            <circle cx="21%" cy="16%" r="2.2" fill="#c4b5fd" />
+            <circle cx="55%" cy="18%" r="1.8" fill="#fef08a" />
+            <circle cx="82%" cy="14%" r="2" fill="#bae6fd" />
+          </g>
+          <g class="animate-twinkle-3">
+            <circle cx="33%" cy="42%" r="1.5" fill="#ffffff" />
+            <circle cx="50%" cy="34%" r="2.5" fill="#ffffff" />
+            <circle cx="76%" cy="38%" r="1.8" fill="#fef08a" />
+          </g>
+          <!-- Shooting Star -->
+          <line x1="220" y1="40" x2="310" y2="75" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+        </svg>
+
+        <!-- Illustrated Earth in the Lunar Sky -->
+        <div class="absolute top-6 right-8 md:right-24 group pointer-events-auto cursor-help transition-transform duration-500 hover:scale-105" title="Planet Earth (384,400 km away!)">
+          <div class="w-32 h-32 md:w-44 md:h-44 rounded-full relative overflow-hidden shadow-2xl border border-sky-300/40" style="box-shadow: 0 0 35px rgba(56, 189, 248, 0.5);">
+            <!-- Ocean base -->
+            <div class="absolute inset-0" style="background: radial-gradient(circle at 35% 35%, #0284c7 0%, #0369a1 40%, #075985 70%, #0c4a6e 100%);"></div>
+            <!-- Continents & Clouds -->
+            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
+              <path d="M 35 45 Q 65 38 75 70 Q 70 85 48 95 Q 32 75 35 45 Z" fill="#15803d" opacity="0.9" />
+              <path d="M 85 30 Q 140 35 135 65 Q 100 70 85 30 Z" fill="#22c55e" opacity="0.9" />
+              <path d="M 98 70 Q 142 85 115 135 Q 95 100 98 70 Z" fill="#15803d" opacity="0.9" />
+              <path d="M 45 10 Q 100 25 155 10 Z" fill="#ffffff" opacity="0.9" />
+              <path d="M 20 60 Q 90 68 175 70 Q 100 75 20 60 Z" fill="#e0f2fe" opacity="0.75" />
+              <path d="M 35 110 Q 120 118 185 115 Q 105 122 35 110 Z" fill="#ffffff" opacity="0.8" />
+              <!-- Terminator shadow curve -->
+              <path d="M 100 0 A 100 100 0 0 1 100 200 A 75 100 0 0 0 100 0 Z" fill="#020617" opacity="0.65" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Lunar Surface, Crater Ridges, and Energy Conduit Cables -->
+      <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1440 800" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="distRim" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#1e293b" /><stop offset="100%" stopColor="#0f172a" />
+          </linearGradient>
+          <linearGradient id="midRim" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#334155" /><stop offset="100%" stopColor="#1e293b" />
+          </linearGradient>
+          <linearGradient id="surfGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#475569" /><stop offset="40%" stopColor="#334155" /><stop offset="100%" stopColor="#1e293b" />
+          </linearGradient>
+        </defs>
+
+        <path d="M 0 460 Q 380 430 740 410 Q 1120 420 1440 430 L 1440 800 L 0 800 Z" fill="url(#distRim)" opacity="0.85" />
+        <path d="M 0 520 Q 480 500 960 480 Q 1200 440 1440 510 L 1440 800 L 0 800 Z" fill="url(#midRim)" />
+        <path d="M 0 570 Q 500 565 1050 560 Q 1280 535 1440 565 L 1440 800 L 0 800 Z" fill="url(#surfGrad)" />
+
+        <!-- Craters -->
+        <ellipse cx="140" cy="680" rx="90" ry="26" fill="#0f172a" opacity="0.8" />
+        <path d="M 50 680 Q 140 662 230 680" stroke="#94a3b8" stroke-width="2.5" fill="none" opacity="0.75" />
+        <ellipse cx="820" cy="710" rx="65" ry="18" fill="#0f172a" opacity="0.8" />
+        <path d="M 755 710 Q 820 696 885 710" stroke="#94a3b8" stroke-width="2" fill="none" opacity="0.7" />
+
+        <!-- Glowing Power Conduits -->
+        <path d="M 440 630 Q 350 635 280 645" stroke="#f59e0b" stroke-width="3" fill="none" opacity="0.9" />
+        <path d="M 440 630 Q 350 635 280 645" stroke="#fef08a" stroke-width="2" fill="none" class="animate-energy-line" />
+        <path d="M 520 630 Q 600 625 670 632" stroke="#10b981" stroke-width="3" fill="none" opacity="0.85" />
+        <path d="M 520 630 Q 600 625 670 632" stroke="#a7f3d0" stroke-width="2" fill="none" class="animate-energy-line" />
+        <path d="M 760 635 Q 860 630 960 640" stroke="#a855f7" stroke-width="3" fill="none" opacity="0.85" />
+        <path d="M 760 635 Q 860 630 960 640" stroke="#e9d5ff" stroke-width="2" fill="none" class="animate-energy-line" />
+      </svg>
+
+      <!-- Mission Flag -->
+      <div id="flagNode" class="absolute bottom-[28%] left-[22%] pointer-events-auto cursor-pointer group" title="Click to salute the Little Astronaut Mission Flag!">
+        <div class="relative">
+          <div class="w-1.5 h-16 bg-slate-300 rounded-full shadow-md"></div>
+          <div class="absolute top-1 left-1.5 animate-flag-wave origin-left">
+            <svg width="46" height="28" viewBox="0 0 48 30">
+              <rect width="48" height="30" rx="3" fill="#0284c7" />
+              <circle cx="15" cy="15" r="7" fill="#fbbf24" />
+              <path d="M 12 18 L 18 10 L 22 17 L 16 17 Z" fill="#ffffff" />
+              <path d="M 24 12 L 42 12" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Buildings Container -->
+      <!-- A. Crew Habitat (Left) -->
+      <div id="node-habitat" class="interactive-building absolute bottom-[20%] left-[5%] z-10" onclick="openPanel('habitat')">
+        <div class="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 rounded-full bg-slate-900/90 text-sky-200 border border-sky-400/50 shadow-md text-xs font-bold">
+          🏠 Crew Habitat
+        </div>
+        <svg viewBox="0 0 280 200" class="w-56 sm:w-64 md:w-72 drop-shadow-2xl">
+          <!-- Foundation -->
+          <ellipse cx="140" cy="178" rx="118" ry="14" fill="#334155" />
+          <!-- Sub Dome -->
+          <path d="M 60 175 A 48 46 0 0 1 156 175 Z" fill="#cbd5e1" stroke="#475569" stroke-width="2" />
+          <circle cx="95" cy="150" r="9" fill="#f59e0b" stroke="#334155" stroke-width="2.5" />
+          <!-- Main Dome -->
+          <path d="M 100 170 A 75 70 0 0 1 250 170 Z" fill="#e2e8f0" stroke="#475569" stroke-width="2.5" />
+          <rect x="156" y="148" width="38" height="12" rx="3" fill="#0284c7" />
+          <text x="175" y="157" fill="#ffffff" font-size="7" font-weight="bold" text-anchor="middle" font-family="sans-serif">HAB-01</text>
+          <!-- Cupola -->
+          <path d="M 153 100 A 22 18 0 0 1 197 100 Z" fill="#0284c7" stroke="#38bdf8" stroke-width="2" />
+          <!-- Antenna -->
+          <line x1="195" y1="96" x2="195" y2="75" stroke="#cbd5e1" stroke-width="2.5" />
+          <circle cx="195" cy="73" r="3" fill="#ef4444" class="animate-pulse" />
+          <!-- Airlock -->
+          <rect x="210" y="142" width="36" height="34" rx="4" fill="#94a3b8" stroke="#334155" stroke-width="2" />
+          <rect x="217" y="148" width="22" height="28" rx="3" fill="#475569" />
+          <circle cx="228" cy="152" r="2.2" fill="#22c55e" />
+        </svg>
+      </div>
+
+      <!-- B. Solar Panel Station (Center-Left) -->
+      <div id="node-solar-station" class="interactive-building absolute bottom-[28%] left-[30%] z-10" onclick="openPanel('solar-station')">
+        <div class="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 rounded-full bg-slate-900/90 text-amber-200 border border-amber-400/50 shadow-md text-xs font-bold">
+          ☀️ Solar Station
+        </div>
+        <svg viewBox="0 0 260 210" class="w-52 sm:w-60 md:w-68 drop-shadow-2xl">
+          <ellipse cx="130" cy="192" rx="90" ry="10" fill="#334155" />
+          <!-- Mast & Gimbal -->
+          <line x1="130" y1="192" x2="130" y2="70" stroke="#cbd5e1" stroke-width="5" />
+          <line x1="20" y1="70" x2="240" y2="70" stroke="#f59e0b" stroke-width="4" />
+          <!-- Left Wing -->
+          <rect x="18" y="20" width="100" height="90" rx="6" fill="#1e3a8a" stroke="#f59e0b" stroke-width="3" />
+          <line x1="22" y1="65" x2="114" y2="65" stroke="#60a5fa" stroke-width="1.5" />
+          <line x1="68" y1="24" x2="68" y2="106" stroke="#60a5fa" stroke-width="1.5" />
+          <!-- Right Wing -->
+          <rect x="142" y="20" width="100" height="90" rx="6" fill="#1e3a8a" stroke="#f59e0b" stroke-width="3" />
+          <line x1="146" y1="65" x2="238" y2="65" stroke="#60a5fa" stroke-width="1.5" />
+          <line x1="192" y1="24" x2="192" y2="106" stroke="#60a5fa" stroke-width="1.5" />
+          <!-- Battery Storage Bank -->
+          <rect x="85" y="148" width="90" height="42" rx="5" fill="#1e293b" stroke="#64748b" stroke-width="2" />
+          <rect x="97" y="158" width="66" height="8" rx="3" fill="#0f172a" />
+          <rect x="99" y="160" width="62" height="4" rx="2" fill="#22c55e" class="animate-pulse-glow" />
+        </svg>
+      </div>
+
+      <!-- C. Greenhouse Bio-Dome (Center) -->
+      <div id="node-greenhouse" class="interactive-building absolute bottom-[22%] left-[48%] z-10" onclick="openPanel('greenhouse')">
+        <div class="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 rounded-full bg-slate-900/90 text-emerald-200 border border-emerald-400/50 shadow-md text-xs font-bold">
+          🌱 Bio-Dome
+        </div>
+        <svg viewBox="0 0 250 200" class="w-52 sm:w-60 md:w-68 drop-shadow-2xl">
+          <ellipse cx="125" cy="176" rx="102" ry="12" fill="#334155" stroke="#475569" stroke-width="2" />
+          <!-- Interior Purple Glow & Foliage -->
+          <path d="M 35 174 A 90 85 0 0 1 215 174 Z" fill="#c084fc" opacity="0.3" />
+          <!-- Hydroponic Plants -->
+          <g fill="#22c55e">
+            <circle cx="76" cy="146" r="7" /><circle cx="96" cy="144" r="8" fill="#4ade80" /><circle cx="120" cy="142" r="9" /><circle cx="145" cy="144" r="7" /><circle cx="170" cy="146" r="7" />
+          </g>
+          <!-- Strawberries -->
+          <circle cx="90" cy="126" r="3.5" fill="#ef4444" /><circle cx="115" cy="127" r="4" fill="#ef4444" /><circle cx="140" cy="126" r="3.5" fill="#ef4444" />
+          <!-- Outer Glass Dome -->
+          <path d="M 35 174 A 90 85 0 0 1 215 174 Z" fill="#10b981" opacity="0.35" stroke="#059669" stroke-width="3" />
+          <g stroke="#34d399" stroke-width="1.6" opacity="0.8" fill="none">
+            <line x1="125" y1="42" x2="125" y2="174" />
+            <path d="M 80 58 Q 125 75 170 58" /><path d="M 55 98 Q 125 125 195 98" />
+          </g>
+          <!-- Glass Shine Highlight -->
+          <path d="M 50 140 A 82 78 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+        </svg>
+      </div>
+
+      <!-- D. Radiation Shelter (Right) -->
+      <div id="node-radiation-shelter" class="interactive-building absolute bottom-[24%] right-[18%] z-10" onclick="openPanel('radiation-shelter')">
+        <div class="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 rounded-full bg-slate-900/90 text-purple-200 border border-purple-400/50 shadow-md text-xs font-bold">
+          🛡️ Radiation Shelter
+        </div>
+        <svg viewBox="0 0 270 210" class="w-56 sm:w-64 md:w-72 drop-shadow-2xl">
+          <ellipse cx="135" cy="185" rx="118" ry="12" fill="#1e293b" />
+          <!-- Sintered Regolith Mound -->
+          <path d="M 20 185 Q 50 75 135 65 Q 220 75 250 185 Z" fill="#334155" stroke="#475569" stroke-width="3" />
+          <!-- Armored Blast Door Archway -->
+          <path d="M 85 185 L 85 130 A 50 50 0 0 1 185 130 L 185 185 Z" fill="#1e293b" stroke="#64748b" stroke-width="4" />
+          <!-- Blast Door -->
+          <rect x="99" y="121" width="72" height="64" rx="6" fill="#64748b" stroke="#334155" stroke-width="3" />
+          <circle cx="135" cy="153" r="14" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+          <!-- Sensor Mast -->
+          <line x1="135" y1="65" x2="135" y2="35" stroke="#94a3b8" stroke-width="3" />
+          <circle cx="135" cy="32" r="8" fill="#7e22ce" stroke="#c084fc" stroke-width="2" />
+          <circle cx="135" cy="32" r="4" fill="#a855f7" class="animate-pulse" />
+        </svg>
+      </div>
+
+      <!-- E. Lunar Rover (Far Right) -->
+      <div id="node-rover" class="interactive-building absolute bottom-[16%] right-[3%] z-10" onclick="openPanel('rover')">
+        <div class="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-0.5 rounded-full bg-slate-900/90 text-orange-200 border border-orange-400/50 shadow-md text-xs font-bold">
+          🚙 Lunar Rover
+        </div>
+        <svg viewBox="0 0 170 120" class="w-40 sm:w-44 md:w-48 drop-shadow-xl">
+          <ellipse cx="85" cy="112" rx="70" ry="8" fill="#0f172a" opacity="0.65" />
+          <!-- Chassis -->
+          <path d="M 32 65 L 140 65 L 145 88 L 26 88 Z" fill="#e2e8f0" stroke="#475569" stroke-width="2" />
+          <path d="M 30 74 L 142 74 L 144 79 L 28 79 Z" fill="#f97316" />
+          <!-- Roll cage -->
+          <path d="M 50 65 L 65 48 L 105 48 L 115 65 Z" fill="none" stroke="#475569" stroke-width="2.5" />
+          <!-- Camera Mast -->
+          <line x1="45" y1="65" x2="45" y2="25" stroke="#94a3b8" stroke-width="3" />
+          <circle cx="45" cy="25" r="3" fill="#38bdf8" />
+          <!-- Wire Mesh Wheels -->
+          <circle cx="42" cy="92" r="16" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+          <circle cx="42" cy="92" r="6" fill="#f97316" />
+          <circle cx="126" cy="92" r="16" fill="#334155" stroke="#94a3b8" stroke-width="2" />
+          <circle cx="126" cy="92" r="6" fill="#f97316" />
+        </svg>
+      </div>
+
+      <!-- 4. Astronaut Characters -->
+      <!-- Commander Leo (floating zero-g) -->
+      <div class="absolute top-[48%] left-[13%] z-20 cursor-pointer group pointer-events-auto" onclick="openPanel('astronaut-leo')">
+        <div class="animate-float-astronaut">
+          <div class="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full bg-slate-900/95 text-cyan-300 border border-cyan-400/50 text-[10px] font-bold">
+            👨‍🚀 Cmdr. Leo
+          </div>
+          <svg width="60" height="80" viewBox="0 0 74 96">
+            <rect x="14" y="22" width="22" height="36" rx="5" fill="#e2e8f0" stroke="#475569" stroke-width="2" />
+            <rect x="26" y="28" width="26" height="32" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+            <circle cx="39" cy="18" r="15" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
+            <ellipse cx="40" cy="18" rx="11" ry="8" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Botanist Maya (near greenhouse) -->
+      <div class="absolute top-[62%] left-[45%] z-20 cursor-pointer group pointer-events-auto" onclick="openPanel('astronaut-maya')">
+        <div class="animate-float-gentle">
+          <div class="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full bg-slate-900/95 text-emerald-300 border border-emerald-400/50 text-[10px] font-bold">
+            👩‍🚀 Botanist Maya
+          </div>
+          <svg width="56" height="78" viewBox="0 0 68 92">
+            <rect x="24" y="28" width="24" height="32" rx="7" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+            <rect x="24" y="38" width="24" height="4" fill="#10b981" />
+            <circle cx="36" cy="18" r="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
+            <ellipse cx="36" cy="18" rx="10" ry="7" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Cadet Sam & BEEP-0 (near rover) -->
+      <div class="absolute top-[66%] right-[19%] z-20 cursor-pointer group pointer-events-auto" onclick="openPanel('astronaut-sam')">
+        <div class="animate-float-gentle flex items-end gap-1">
+          <div class="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full bg-slate-900/95 text-pink-300 border border-pink-400/50 text-[10px] font-bold">
+            🧑‍🚀 Sam & BEEP-0
+          </div>
+          <svg width="56" height="78" viewBox="0 0 68 92">
+            <rect x="22" y="28" width="24" height="32" rx="7" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+            <circle cx="34" cy="18" r="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
+            <ellipse cx="34" cy="18" rx="10" ry="7" fill="#fbbf24" stroke="#d97706" stroke-width="1.5" />
+          </svg>
+          <!-- Floating Drone BEEP-0 -->
+          <div class="animate-float-astronaut -translate-y-3">
+            <svg width="30" height="34" viewBox="0 0 40 44">
+              <rect x="6" y="12" width="28" height="24" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+              <circle cx="20" cy="2" r="3" fill="#38bdf8" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Navigation Pill Bar -->
+    <div class="p-3 bg-slate-900/90 rounded-2xl border border-slate-800 flex items-center justify-between gap-2 overflow-x-auto">
+      <span class="text-xs font-bold text-slate-400 pl-2 whitespace-nowrap">Explore Quick Access:</span>
+      <div class="flex items-center gap-2">
+        <button onclick="openPanel('habitat')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold flex items-center gap-1.5">
+          <span>🏠</span><span>Crew Habitat</span>
+        </button>
+        <button onclick="openPanel('solar-station')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold flex items-center gap-1.5">
+          <span>☀️</span><span>Solar Station</span>
+        </button>
+        <button onclick="openPanel('greenhouse')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold flex items-center gap-1.5">
+          <span>🌱</span><span>Greenhouse</span>
+        </button>
+        <button onclick="openPanel('radiation-shelter')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold flex items-center gap-1.5">
+          <span>🛡️</span><span>Shelter</span>
+        </button>
+        <button onclick="openPanel('rover')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold flex items-center gap-1.5">
+          <span>🚙</span><span>Rover</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Child-Friendly Modal Sheet -->
+  <div id="modalOverlay" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-5 bg-slate-950/75 backdrop-blur-sm" onclick="closePanel()">
+    <div id="modalCard" class="animate-modal-pop relative w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl border border-sky-400/50 bg-slate-900/95 text-slate-100" onclick="event.stopPropagation()">
+      <!-- Modal Header -->
+      <div id="modalHeader" class="px-6 py-5 flex items-start justify-between border-b border-slate-700/60 bg-gradient-to-r from-sky-900 to-slate-900">
+        <div class="flex items-center gap-3.5">
+          <div id="modalIcon" class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-white/20 bg-sky-500/20">
+            🏠
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="modalCategory" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-950 text-sky-300 border border-sky-800">
+                Habitat
+              </span>
+              <span id="modalBadge" class="text-[11px] font-semibold text-amber-300 bg-amber-950/70 px-2 py-0.5 rounded-full border border-amber-500/40">
+                🏅 Discovered!
+              </span>
+            </div>
+            <h2 id="modalTitle" class="text-xl sm:text-2xl font-black text-white mt-0.5">Crew Habitat Dome</h2>
+            <p id="modalTagline" class="text-xs text-slate-300 font-medium">Home sweet home 384,400 km away from Earth!</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="speakBtn" onclick="toggleReadAloud()" class="p-2.5 rounded-2xl border bg-slate-800 text-sky-200 border-sky-400/30 text-xs font-bold hover:bg-slate-700 flex items-center gap-1.5" title="Read description out loud for kids">
+            <span id="speakIcon">🔊</span>
+            <span id="speakText" class="hidden sm:inline">Read Aloud</span>
+          </button>
+          <button onclick="closePanel()" class="w-10 h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white border border-slate-700 flex items-center justify-center text-lg font-bold">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="flex border-b border-slate-800 bg-slate-950/60 px-5 pt-2 gap-2 text-xs font-bold">
+        <button id="tabLearnBtn" onclick="switchTab('learn')" class="pb-2.5 px-3 rounded-t-lg border-b-2 border-sky-400 text-sky-300 bg-slate-800/40">
+          📖 How It Works
+        </button>
+        <button id="tabFunBtn" onclick="switchTab('fun')" class="pb-2.5 px-3 rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+          💡 Fun Fact
+        </button>
+        <button id="tabStatsBtn" onclick="switchTab('stats')" class="pb-2.5 px-3 rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+          📊 Outpost Specs
+        </button>
+      </div>
+
+      <!-- Modal Content Body -->
+      <div class="p-6 overflow-y-auto space-y-4 max-h-[60vh]">
+        <!-- Learn Tab -->
+        <div id="tabLearn" class="space-y-4">
+          <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700 space-y-2">
+            <div class="flex items-center gap-2 text-sky-300 font-bold text-sm">
+              <span>🚀</span>
+              <h3>Why Astronauts Need This</h3>
+            </div>
+            <p id="modalExplanation" class="text-sm text-slate-200 leading-relaxed font-normal">
+              Explanation goes here.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-sky-950/30 border border-sky-500/30 space-y-1.5">
+            <div class="flex items-center gap-2 font-bold text-xs uppercase text-sky-300">
+              <span>⚡</span>
+              <h4>Space Superpower</h4>
+            </div>
+            <p id="modalSuperpower" class="text-xs sm:text-sm text-slate-300 font-medium">
+              Superpower details.
+            </p>
+          </div>
+        </div>
+
+        <!-- Fun Fact Tab -->
+        <div id="tabFun" class="hidden space-y-4">
+          <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-950/40 to-slate-900 border border-amber-500/40 space-y-3">
+            <div class="flex items-center gap-2 text-amber-300 font-black text-base">
+              <span>🌟</span>
+              <h3>Did You Know? Cosmic Trivia!</h3>
+            </div>
+            <p id="modalFunFact" class="text-sm text-amber-100 font-medium leading-relaxed">
+              Fun fact text.
+            </p>
+          </div>
+        </div>
+
+        <!-- Stats Tab -->
+        <div id="tabStats" class="hidden grid grid-cols-2 gap-3">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Interactive Drill Action -->
+        <div class="pt-3 border-t border-slate-800">
+          <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+              <div class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <span>🎮</span>
+                <span>Little Astronaut Drill</span>
+              </div>
+              <p id="drillPrompt" class="text-xs text-slate-400 mt-0.5">Click the button to test systems!</p>
+            </div>
+            <button id="drillActionBtn" onclick="completeDrill()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 text-white shadow-md">
+              Complete Task
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3.5 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <span id="footerBadgeText">Badge: Cozy Hab Pioneer</span>
+        <button onclick="closePanel()" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">
+          Back to Outpost
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Audio synthesizer with Web Audio API
+    class SoundFX {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playChime(baseFreq = 440) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [baseFreq, baseFreq * 1.25, baseFreq * 1.5].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+            gain.gain.setValueAtTime(0.08, now + idx * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.05);
+            osc.stop(now + idx * 0.05 + 0.22);
+          });
+        } catch(e) {}
+      }
+      playSuccess() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+            gain.gain.setValueAtTime(0.12, now + idx * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.06);
+            osc.stop(now + idx * 0.06 + 0.32);
+          });
+        } catch(e) {}
+      }
+    }
+
+    const sound = new SoundFX();
+    let soundOn = true;
+    let discoveredBadges = new Set(['habitat']);
+    let currentBuildingId = null;
+    let isSpeaking = false;
+
+    const DATA = {
+      'habitat': {
+        name: 'Crew Habitat Dome',
+        category: 'Habitat',
+        tagline: 'Home sweet home 384,400 km away from Earth!',
+        icon: '🏠',
+        badgeIcon: '🏅',
+        badgeName: 'Cozy Hab Pioneer',
+        freq: 440,
+        explanation: 'Think of this as the astronauts’ cozy space house! Outside, there is no air to breathe and it can get freezing cold (-130°C) or boiling hot (+120°C). Inside the habitat, it is always a cozy 21°C with fresh air, comfy sleeping bags hung on walls, and fun space food!',
+        superpower: 'Double-walled pressurized seal with micro-meteorite blast curtains that keep all the breathable air safely inside!',
+        funFact: 'Because there is very little gravity on the Moon (1/6th of Earth!), astronauts sleep strapped into wall bags so they don’t float away and bump into the ceiling while dreaming!',
+        taskPrompt: 'Check the airlock seal to ensure clean cabin pressure!',
+        taskSuccess: 'Psssshh! Airlock sealed tight! Safe for socks-only indoor fun!',
+        stats: [
+          { label: 'Inside Temp', val: '21°C (70°F)', icon: '🌡️' },
+          { label: 'Air Pressure', val: '101.3 kPa', icon: '💨' },
+          { label: 'Crew Capacity', val: '4 Astronauts', icon: '👨‍🚀' },
+          { label: 'Gravity', val: '1/6 Earth G', icon: '🪶' }
+        ]
+      },
+      'solar-station': {
+        name: 'Solar Panel Station',
+        category: 'Energy',
+        tagline: 'Catching sunlight to power all our space science!',
+        icon: '☀️',
+        badgeIcon: '⚡',
+        badgeName: 'Sun Power Champion',
+        freq: 659,
+        explanation: 'Without power cords running to Earth, how do our lamps, heaters, and computers stay on? The Moon has no clouds and no rain, so the Sun shines super bright! These giant shiny blue wings soak up sunlight and turn it into clean electricity.',
+        superpower: 'Self-orienting robotic tracking: the solar panels slowly turn like sunflowers to catch every beam of golden sunlight!',
+        funFact: 'A lunar day lasts about 14 Earth days of non-stop sunshine followed by 14 Earth days of night! That’s why our station has super big battery cubes to keep the lights on during the long lunar night.',
+        taskPrompt: 'Align the solar panels directly toward the sun for max charge!',
+        taskSuccess: 'Bzzzt! Solar panels aligned! Power flow boosted to maximum surge!',
+        stats: [
+          { label: 'Peak Output', val: '150 kW', icon: '⚡' },
+          { label: 'Tracking', val: 'Continuous 360°', icon: '🔄' },
+          { label: 'Battery Reserve', val: '350 kWh Storage', icon: '🔋' },
+          { label: 'Efficiency', val: '34% GaInP/GaAs', icon: '✨' }
+        ]
+      },
+      'greenhouse': {
+        name: 'Lunar Bio-Dome Greenhouse',
+        category: 'Life Support',
+        tagline: 'Growing fresh lunar strawberries and sweet oxygen!',
+        icon: '🌱',
+        badgeIcon: '🍓',
+        badgeName: 'Master Astro-Farmer',
+        freq: 523,
+        explanation: 'Astronauts get tired of eating food out of plastic pouches! In this sparkling glass dome, we grow real crispy lettuce, sweet space strawberries, and dwarf cherry tomatoes. Plants breathe in the CO₂ astronauts breathe out, and give back fresh, pure oxygen in return!',
+        superpower: 'Aeroponic root misting: the plants grow without any dirt! Their roots dangle in the air and get sprayed with nutrient water mist!',
+        funFact: 'Plants in space still know which way to grow! Even in low gravity, roots follow the water mist downwards and the leaves grow toward the special purple LED grow lights.',
+        taskPrompt: 'Spray nutrient mist onto the hydroponic roots to help them grow!',
+        taskSuccess: 'Spritz! The space plants love it! A tiny strawberry just sprouted!',
+        stats: [
+          { label: 'Daily O₂ Made', val: '12 kg / Day', icon: '🫧' },
+          { label: 'Crops', val: 'Tomatoes, Strawberries, Kale', icon: '🥗' },
+          { label: 'Grow Lights', val: 'Purple LED', icon: '💡' },
+          { label: 'Water Loop', val: '98% Recycled', icon: '💧' }
+        ]
+      },
+      'radiation-shelter': {
+        name: 'Radiation-Protected Shelter',
+        category: 'Safety',
+        tagline: 'Deep underground shield safe from solar storms & space rays!',
+        icon: '🛡️',
+        badgeIcon: '🔮',
+        badgeName: 'Cosmic Shield Guardian',
+        freq: 392,
+        explanation: 'Earth has a giant magnetic shield that protects us from harmful space radiation, but the Moon doesn’t! When the Sun shoots out solar storms, astronauts head down into this reinforced underground bunker. It has a super thick roof made of melted lunar moon rocks and water walls!',
+        superpower: '3 meters of dense compacted lunar regolith plus water-jacket ceiling that blocks 99.8% of cosmic rays!',
+        funFact: 'Water is one of the best space shields in the universe because hydrogen atoms absorb cosmic particles! So the shelter walls double as our drinking water tanks!',
+        taskPrompt: 'Engage the cosmic shield blast doors to test the storm drill!',
+        taskSuccess: 'Clang-woosh! Heavy blast shields engaged! 100% storm safe!',
+        stats: [
+          { label: 'Shield Depth', val: '3.2m Regolith', icon: '🪨' },
+          { label: 'Protection', val: '99.8% Block', icon: '🛡️' },
+          { label: 'Depth', val: '5m Underground', icon: '⛏️' },
+          { label: 'Emergency Food', val: '30-Day Sealed', icon: '🥫' }
+        ]
+      },
+      'rover': {
+        name: 'Lunar Scout Rover',
+        category: 'Exploration',
+        tagline: 'The ultimate off-road electric moon buggy!',
+        icon: '🚙',
+        badgeIcon: '🚀',
+        badgeName: 'Moon Buggy Racer',
+        freq: 587,
+        explanation: 'Walking on the Moon in a big bulky spacesuit takes lots of energy. This electric rover has wire mesh spring tires that never get flat tires from sharp rocks, an HD camera mast, and mechanical arms to pick up sparkly moon stones!',
+        superpower: 'Special nickel-titanium wire tires that bounce over rocks without needing air, so they can never pop in a vacuum!',
+        funFact: 'The rover can climb steep 25-degree crater walls without slipping because its computer can turn each wheel in opposite directions!',
+        taskPrompt: 'Honk the rover communication horn and spin the antenna!',
+        taskSuccess: 'Beep beep! Antenna rotating! Ready to roll over crater rims!',
+        stats: [
+          { label: 'Top Speed', val: '18 km/h', icon: '🏎️' },
+          { label: 'Range', val: '90 km / charge', icon: '🛣️' },
+          { label: 'Tires', val: 'Airless Mesh', icon: '⚙️' },
+          { label: 'Robotic Arm', val: 'Sample Scoop', icon: '🦾' }
+        ]
+      },
+      'astronaut-leo': {
+        name: 'Commander Leo',
+        category: 'Crew',
+        tagline: 'Mission Commander, lunar pilot & zero-gravity acrobat!',
+        icon: '👨‍🚀',
+        badgeIcon: '🌟',
+        badgeName: 'Commander Salute',
+        freq: 493,
+        explanation: 'Meet Commander Leo! He has spent 500 hours training underwater in giant pools on Earth to practice how to move in space. His gold visor protects his eyes from harsh UV sunlight!',
+        superpower: 'Master of the low-gravity bunny hop! He can leap over big craters with a single bounce!',
+        funFact: 'Leo’s spacesuit has 14 different layers of special fabric to keep him warm, cool, and safe from tiny space dust called micrometeoroids.',
+        taskPrompt: 'High-five Commander Leo in low gravity!',
+        taskSuccess: 'Boing! Epic low-gravity high-five! You jumped 2 meters high!',
+        stats: [
+          { label: 'EVAs', val: '12 Walks', icon: '🥾' },
+          { label: 'Suit O₂', val: '8.5 Hours', icon: '🫁' },
+          { label: 'Moon Hops', val: 'Over 2,000 hops!', icon: '🦘' },
+          { label: 'Snack', val: 'Strawberries', icon: '🍓' }
+        ]
+      },
+      'astronaut-maya': {
+        name: 'Specialist Maya',
+        category: 'Crew',
+        tagline: 'Astro-Botanist, scientist & chief plant whisperer!',
+        icon: '👩‍🚀',
+        badgeIcon: '🌿',
+        badgeName: 'Space Botanist Pin',
+        freq: 554,
+        explanation: 'Maya loves green living things! She brought special seeds from Earth and is testing how plants can produce enough food and fresh oxygen for astronauts to live on the Moon and Mars forever.',
+        superpower: 'Can tell if a lunar tomato plant is thirsty just by looking at its leaf posture under the purple LED lights!',
+        funFact: 'Maya once played a flute inside the greenhouse dome to see if musical vibrations help space lettuce grow faster!',
+        taskPrompt: 'Help Maya record the height of a baby space sunflower!',
+        taskSuccess: 'Recorded! The space sunflower is 15 cm tall and glowing bright!',
+        stats: [
+          { label: 'Specialty', val: 'Astro-Botany', icon: '🔬' },
+          { label: 'Seeds', val: '450 Varieties', icon: '🌱' },
+          { label: 'Samples', val: '128 Cores', icon: '🧪' },
+          { label: 'Favorite', val: 'Cosmic Sunflower', icon: '🌻' }
+        ]
+      },
+      'astronaut-sam': {
+        name: 'Cadet Sam & BEEP-0',
+        category: 'Crew',
+        tagline: 'Robotics engineer, mechanic & rover tuning wizard!',
+        icon: '🧑‍🚀',
+        badgeIcon: '🤖',
+        badgeName: 'Robo-Mechanic Wrench',
+        freq: 622,
+        explanation: 'Cadet Sam is our tech genius! Together with his trusty hover-drone buddy BEEP-0, he fixes solar panels, tightens rover lug nuts, and programs robot drones to explore icy moon caves.',
+        superpower: 'Can fix any machine on the lunar outpost using a multi-tool wrench and a roll of space-grade Kapton duct tape!',
+        funFact: 'BEEP-0 the robot uses sound beeps because in space there is no air for talking outside, so they chat using radio frequencies!',
+        taskPrompt: 'Calibrate BEEP-0’s optical sensor with a cheerful high beep!',
+        taskSuccess: 'Boop-whirrr-ding! BEEP-0 lights up with a happy smiley face!',
+        stats: [
+          { label: 'Drones', val: '8 Built', icon: '⚙️' },
+          { label: 'Bot Pal', val: 'BEEP-0 (Mk II)', icon: '🤖' },
+          { label: 'Bolts', val: '1,420 Fastened', icon: '🔧' },
+          { label: 'Music', val: 'Synthwave', icon: '🎵' }
+        ]
+      }
+    };
+
+    function openPanel(id) {
+      currentBuildingId = id;
+      const data = DATA[id];
+      if (!data) return;
+
+      discoveredBadges.add(id);
+      document.getElementById('badgeCounter').textContent = `${discoveredBadges.size} / 8`;
+
+      sound.playChime(data.freq || 440);
+
+      document.getElementById('modalIcon').textContent = data.icon;
+      document.getElementById('modalCategory').textContent = data.category;
+      document.getElementById('modalTitle').textContent = data.name;
+      document.getElementById('modalTagline').textContent = data.tagline;
+      document.getElementById('modalExplanation').textContent = data.explanation;
+      document.getElementById('modalSuperpower').textContent = data.superpower;
+      document.getElementById('modalFunFact').textContent = data.funFact;
+      document.getElementById('footerBadgeText').textContent = `Badge: ${data.badgeName}`;
+
+      const statsEl = document.getElementById('tabStats');
+      statsEl.innerHTML = data.stats.map(s => `
+        <div class="p-3.5 rounded-2xl bg-slate-800/50 border border-slate-700/80">
+          <div class="text-xs text-slate-400 font-semibold flex items-center gap-1.5">${s.icon} ${s.label}</div>
+          <div class="text-sm font-black text-white mt-1">${s.val}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('drillPrompt').textContent = data.taskPrompt;
+      const drillBtn = document.getElementById('drillActionBtn');
+      drillBtn.textContent = 'Complete Drill';
+      drillBtn.className = 'w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 text-white shadow-md';
+      drillBtn.disabled = false;
+
+      switchTab('learn');
+
+      const overlay = document.getElementById('modalOverlay');
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+    }
+
+    function closePanel() {
+      stopSpeaking();
+      const overlay = document.getElementById('modalOverlay');
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+    }
+
+    function switchTab(tab) {
+      const learn = document.getElementById('tabLearn');
+      const fun = document.getElementById('tabFun');
+      const stats = document.getElementById('tabStats');
+      const btnL = document.getElementById('tabLearnBtn');
+      const btnF = document.getElementById('tabFunBtn');
+      const btnS = document.getElementById('tabStatsBtn');
+
+      learn.classList.add('hidden');
+      fun.classList.add('hidden');
+      stats.classList.add('hidden');
+      btnL.className = 'pb-2.5 px-3 rounded-t-lg border-b-2 border-transparent text-slate-400';
+      btnF.className = 'pb-2.5 px-3 rounded-t-lg border-b-2 border-transparent text-slate-400';
+      btnS.className = 'pb-2.5 px-3 rounded-t-lg border-b-2 border-transparent text-slate-400';
+
+      if (tab === 'learn') {
+        learn.classList.remove('hidden');
+        btnL.className = 'pb-2.5 px-3 rounded-t-lg border-b-2 border-sky-400 text-sky-300 bg-slate-800/40';
+      } else if (tab === 'fun') {
+        fun.classList.remove('hidden');
+        btnF.className = 'pb-2.5 px-3 rounded-t-lg border-b-2 border-amber-400 text-amber-300 bg-slate-800/40';
+      } else {
+        stats.classList.remove('hidden');
+        btnS.className = 'pb-2.5 px-3 rounded-t-lg border-b-2 border-emerald-400 text-emerald-300 bg-slate-800/40';
+      }
+    }
+
+    function completeDrill() {
+      const data = DATA[currentBuildingId];
+      if (!data) return;
+      sound.playSuccess();
+      document.getElementById('drillPrompt').textContent = data.taskSuccess;
+      const drillBtn = document.getElementById('drillActionBtn');
+      drillBtn.textContent = '✅ Completed!';
+      drillBtn.className = 'w-full sm:w-auto px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 text-white cursor-default';
+      drillBtn.disabled = true;
+    }
+
+    function toggleReadAloud() {
+      if (isSpeaking) {
+        stopSpeaking();
+      } else {
+        const data = DATA[currentBuildingId];
+        if (!data || !('speechSynthesis' in window)) return;
+        isSpeaking = true;
+        document.getElementById('speakText').textContent = 'Reading...';
+        document.getElementById('speakIcon').textContent = '⏹️';
+
+        window.speechSynthesis.cancel();
+        const text = `${data.name}. ${data.tagline}. ${data.explanation} Cosmic fun fact: ${data.funFact}`;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.95;
+        u.pitch = 1.15;
+        u.onend = stopSpeaking;
+        u.onerror = stopSpeaking;
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    function stopSpeaking() {
+      isSpeaking = false;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      document.getElementById('speakText').textContent = 'Read Aloud';
+      document.getElementById('speakIcon').textContent = '🔊';
+    }
+
+    // Toggle sound
+    document.getElementById('toggleSoundBtn').addEventListener('click', () => {
+      soundOn = !soundOn;
+      sound.enabled = soundOn;
+      document.getElementById('soundIcon').textContent = soundOn ? '🔊' : '🔇';
+      document.getElementById('soundLabel').textContent = soundOn ? 'Audio On' : 'Muted';
+    });
+
+    // Salute flag easter egg
+    document.getElementById('flagNode').addEventListener('click', () => {
+      sound.playSuccess();
+      alert('🫡 You saluted the Little Astronaut Mission Flag on the Moon! +1 Cosmic Explorer Honor!');
+    });
+
+    // Keyboard ESC to close
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePanel();
+    });
+  </script>
+</body>
+</html>
